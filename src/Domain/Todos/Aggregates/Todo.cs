@@ -5,16 +5,6 @@ namespace Domain.Todos.Aggregates;
 // The aggregate class is public, but all command handling is kept internal to force the developer to go through CQRS.
 public class Todo : IAggregate<Guid>
 {
-	public static Todo Hydrate(IEnumerable<ITodoCommand> commands)
-	{
-		var aggregate = new Todo();
-		foreach (var command in commands)
-		{
-			command.Visit(aggregate);
-		}
-		return aggregate;
-	}
-
 	public Guid Id { get; private set; }
 	public string Title { get; private set; } = default!;
 	public string Body { get; private set; } = default!;
