@@ -1,5 +1,5 @@
-using Domain.Todos.Aggregates;
+using Domain.Todos.ValueObjects;
 
 namespace Domain.Todos.Commands;
 
-public record TodoUpdateDueDateCommand(Guid AggregateId, DateTime DueDate) : ITodoCommand;
+public record struct TodoUpdateDueDateCommand(TodoId AggregateId, DateTime DueDate) : ITodoCommand;

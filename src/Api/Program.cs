@@ -1,3 +1,4 @@
+using Api;
 using Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -9,8 +10,9 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddInfrastructure();
-builder.Services.AddMediatR(new[] { typeof(Api.MediatRHookup), typeof(Domain.MediatRHookup) });
+var connectionString = builder.Configuration.GetConnectionString("TodosDatabase");
+builder.Services.AddInfrastructure(connectionString);
+builder.Services.AddMediatR(typeof(MediatRHookup), typeof(Domain.MediatRHookup));
 
 var app = builder.Build();
 

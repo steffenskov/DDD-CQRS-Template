@@ -1,10 +1,10 @@
 namespace Domain.Abstractions.Commands;
 
 /// <summary>
-/// Implement this interface for all your commands.
+///     Implement this interface for all your commands.
 /// </summary>
-public interface ICommand<TAggregate, TAggregateId> : IRequest<TAggregate>
-where TAggregate : IAggregate<TAggregateId>
+public interface ICommand<out TAggregate, out TAggregateId> : IRequest<TAggregate>
+	where TAggregate : IAggregate<TAggregateId>
 {
 	TAggregateId AggregateId { get; }
 }

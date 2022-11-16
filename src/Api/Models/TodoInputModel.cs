@@ -3,7 +3,8 @@ namespace Api.Models;
 
 public class TodoInputModel
 {
-	public string Title { get; init; } // set or init are required for the framework to actually set the value, I prefer init to ensure nobody tampers with the value afterwards
+	// set or init are required for the framework to actually set the value, I prefer init to ensure nobody tampers with the value afterwards
+	public string Title { get; init; }
 
 	public string Body { get; init; }
 

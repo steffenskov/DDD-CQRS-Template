@@ -1,7 +1,7 @@
 namespace Domain.Abstractions.Repositories;
 
-public interface IRepository<TAggregate, TId>
-where TAggregate : IAggregate<TId>
+public interface IRepository<TAggregate, in TId>
+	where TAggregate : IAggregate<TId>
 {
 	Task<IEnumerable<TAggregate>> GetAllAsync(CancellationToken cancellationToken);
 	Task<TAggregate?> GetAsync(TId id, CancellationToken cancellationToken);

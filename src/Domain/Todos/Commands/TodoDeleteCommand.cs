@@ -1,5 +1,5 @@
-using Domain.Todos.Aggregates;
+using Domain.Todos.ValueObjects;
 
 namespace Domain.Todos.Commands;
 
-public record TodoDeleteCommand(Guid AggregateId) : ITodoCommand;
+public record struct TodoDeleteCommand(TodoId AggregateId) : ITodoCommand;
