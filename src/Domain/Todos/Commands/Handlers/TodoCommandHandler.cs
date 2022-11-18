@@ -21,9 +21,7 @@ internal class TodoCommandHandler
 
 	public async Task<Todo> Handle(TodoCreateCommand request, CancellationToken cancellationToken)
 	{
-		var todo = new Todo(); // Here we're creating a new aggregate, and thus cannot use the GetAndApplyCommandAsync method.
-
-		todo.When(request);
+		var todo = new Todo().With(request); // Here we're creating a new aggregate, and thus cannot use the GetAndApplyCommandAsync method.
 
 		await PersistAggregateAsync(todo, cancellationToken);
 
@@ -32,17 +30,17 @@ internal class TodoCommandHandler
 
 	public async Task<Todo> Handle(TodoDeleteCommand request, CancellationToken cancellationToken)
 	{
-		return await GetAndApplyCommandAsync(request, todo => todo.When(request), cancellationToken);
+		return await GetAndApplyCommandAsync(request, todo => todo.With(request), cancellationToken);
 	}
 
 	public async Task<Todo> Handle(TodoUpdateCommand request, CancellationToken cancellationToken)
 	{
-		return await GetAndApplyCommandAsync(request, todo => todo.When(request), cancellationToken);
+		return await GetAndApplyCommandAsync(request, todo => todo.With(request), cancellationToken);
 	}
 
 	public async Task<Todo> Handle(TodoUpdateDueDateCommand request, CancellationToken cancellationToken)
 	{
-		return await GetAndApplyCommandAsync(request, todo => todo.When(request), cancellationToken);
+		return await GetAndApplyCommandAsync(request, todo => todo.With(request), cancellationToken);
 	}
 
 	/// <Summary>
@@ -50,15 +48,15 @@ internal class TodoCommandHandler
 	///     persisting.
 	///     It's reusable for all command handling that follows that process.
 	/// </Summary>
-	private async Task<Todo> GetAndApplyCommandAsync(ITodoCommand request, Action<Todo> modifyAction,
+	private async Task<Todo> GetAndApplyCommandAsync(ITodoCommand request, Func<Todo, Todo> modifyAction,
 		CancellationToken cancellationToken)
 	{
-		var todo = await GetTodoAsync(request.AggregateId, cancellationToken);
+		var current = await GetTodoAsync(request.AggregateId, cancellationToken);
 
-		modifyAction.Invoke(todo);
+		var modified = modifyAction.Invoke(current);
 
-		await PersistAggregateAsync(todo, cancellationToken);
-		return todo;
+		await PersistAggregateAsync(modified, cancellationToken);
+		return modified;
 	}
 
 	private async Task<Todo> GetTodoAsync(TodoId id, CancellationToken cancellationToken)
