@@ -10,8 +10,7 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-var connectionString = builder.Configuration.GetConnectionString("TodosDatabase");
-builder.Services.AddInfrastructure(connectionString);
+builder.Services.AddInfrastructure();
 builder.Services.AddMediatR(typeof(MediatRHookup), typeof(Domain.MediatRHookup));
 
 var app = builder.Build();

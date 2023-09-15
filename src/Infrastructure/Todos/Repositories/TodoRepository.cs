@@ -1,27 +1,32 @@
-using Dapper.DDD.Repository.Configuration;
-using Dapper.DDD.Repository.Repositories;
-using Domain.Todos.Aggregates;
-using Domain.Todos.ValueObjects;
-using Microsoft.Extensions.Options;
+using System.Collections.Concurrent;
 
 namespace Infrastructure.Todos.Repositories;
 
-internal class TodoRepository : TableRepository<Todo, TodoId>, ITodoRepository
+// This is an extremely crude implementation, obviously you'd have something better here.
+// Do note how the class is internal, as no other projects should ever know if even exists as we're using dependency injection to ensure the interface has an implementation.
+internal sealed class TodoRepository : ITodoRepository
 {
-	public TodoRepository(IOptions<TableAggregateConfiguration<Todo>> options,
-		IOptions<DefaultConfiguration> defaultOptions) : base(options, defaultOptions)
+	private readonly static IDictionary<TodoId, Todo> _data = new ConcurrentDictionary<TodoId, Todo>(); // We use a static dictionary to mimic an actual data store, like e.g. a SQL server
+
+	public Task<IEnumerable<Todo>> GetAllAsync(CancellationToken cancellationToken)
 	{
+		return Task.FromResult((IEnumerable<Todo>)_data.Values);
 	}
 
-	public async Task SaveAggregateAsync(Todo aggregate, CancellationToken cancellationToken)
+	public Task<Todo?> GetAsync(TodoId id, CancellationToken cancellationToken)
+	{
+		if (_data.TryGetValue(id, out var result))
+			return Task.FromResult((Todo?)result);
+
+		return Task.FromResult((Todo?)null);
+	}
+
+	public Task PersistAggregateAsync(Todo aggregate, CancellationToken cancellationToken)
 	{
 		if (aggregate.Deleted)
-		{
-			await DeleteAsync(aggregate.Id, cancellationToken);
-		}
+			_data.Remove(aggregate.Id);
 		else
-		{
-			await UpsertAsync(aggregate, cancellationToken);
-		}
+			_data[aggregate.Id] = aggregate;
+		return Task.CompletedTask;
 	}
 }

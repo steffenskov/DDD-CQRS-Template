@@ -1,7 +1,7 @@
-using Domain.Todos.Aggregates;
-using Domain.Todos.ValueObjects;
+using Domain;
+using Domain.Todos;
 
-namespace Api.Models;
+namespace Api.Todos.Models;
 
 public class TodoViewModel
 {
@@ -14,9 +14,9 @@ public class TodoViewModel
 
 	public TodoViewModel(Todo todo) // We could also use AutoMapper instead of manually mapping
 	{
-		Id = todo.Id;
-		Title = todo.Title;
-		Body = todo.Body;
-		DueDate = todo.DueDate;
+		this.Id = todo.Id;
+		this.Title = todo.Title;
+		this.Body = todo.Body;
+		this.DueDate = todo.DueDate;
 	}
 }

@@ -1,6 +1,15 @@
-using Domain.Todos.Aggregates;
-using Domain.Todos.ValueObjects;
-
 namespace Domain.Todos.Queries;
 
-public record struct TodoGetSingleQuery(TodoId AggregateId) : IQuery<Todo?>;
+public sealed record TodoGetSingleQuery(TodoId AggregateId) : IQuery<Todo?>;
+
+file sealed class Handler : BaseTodoQueryHandler<TodoGetSingleQuery, Todo?>
+{
+	public Handler(ITodoRepository repository) : base(repository)
+	{
+	}
+
+	public override async Task<Todo?> Handle(TodoGetSingleQuery request, CancellationToken cancellationToken)
+	{
+		return await _repository.GetAsync(request.AggregateId, cancellationToken);
+	}
+}

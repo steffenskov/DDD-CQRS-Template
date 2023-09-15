@@ -1,5 +1,17 @@
-using Domain.Todos.ValueObjects;
-
 namespace Domain.Todos.Commands;
 
-public record struct TodoUpdateDueDateCommand(TodoId AggregateId, DateTime DueDate) : ITodoCommand;
+public sealed record TodoUpdateDueDateCommand(TodoId AggregateId, DateTime DueDate) : BaseTodoCommand(AggregateId)
+{
+	public override async Task<Todo> VisitAsync(Todo aggregate, CancellationToken cancellationToken)
+	{
+		return await aggregate.WithAsync(this, cancellationToken);
+	}
+}
+
+
+sealed file class Handler : BaseTodoUpdateCommandHandler<TodoUpdateDueDateCommand>
+{
+	public Handler(IMediator mediator, ITodoRepository repository) : base(mediator, repository)
+	{
+	}
+}
